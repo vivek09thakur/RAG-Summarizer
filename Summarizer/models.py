@@ -1,23 +1,27 @@
+from dotenv import load_dotenv
+from azure.ai.inference import ChatCompletionsClient
+from azure.ai.inference.models import SystemMessage,UserMessage
+from azure.core.credentials import AzureKeyCredential
 import os
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
-import load_dotenv from dotenv
 
-token = os.environ["GITHUB_TOKEN"]
-endpoint = "https://models.inference.ai.azure.com"
-model_name = "Mistral-large"
-
-client = MistralClient(api_key=token, endpoint=endpoint)
-
-response = client.chat(
-    model=model_name,
-    messages=[
-        ChatMessage(role="system", content="You are a helpful assistant."),
-        ChatMessage(role="user", content="What is the capital of France?"),
-    ],
-    temperature=1.,
-    max_tokens=1000,
-    top_p=1.
-)
-
-print(response.choices[0].message.content)
+class MODEL_GENERATOR:
+    def __init__(self,token,endpoint,model_name) -> None:
+        self.token = token
+        self.endpoint = endpoint
+        self.model_name = model_name
+        self.client = ChatCompletionsClient(
+            endpoint=self.endpoint,
+            credential=AzureKeyCredential(self.token)
+        )
+        pass
+    
+    def complete(self,prompt):
+        completion = self.client.complete(
+            messages=[
+                SystemMessage(
+                    content='''
+                    Your name is XDEA. An AI which is capable of thinking and reasoning for long context 
+                    '''
+                )
+            ]
+        )
